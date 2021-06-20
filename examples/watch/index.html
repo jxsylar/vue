@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runtime+Compiler</title>
+  </head>
+  <body>
+    <div id="app">
+      {{ reversedMessage }}
+      <br>
+      {{ user.fullName }}
+    </div>
+    <script src="../../dist/vue.js"></script>
+    <script>
+      const vm = new Vue({
+        el: "#app",
+        data: {
+          message: 'Hello Vue',
+          user: {
+            firstName: '诸葛',
+            lastName: '亮',
+            fullName: '',
+          }
+        },
+        computed: {
+          reversedMessage: function() {
+            return this.message.split('').reverse().join('')
+          }
+        },
+        watch: {
+          'user': {
+            handler: function (newValue, oldValue) {
+              this.user.fullName = newValue.firstName + ' ' + newValue.lastName
+            },
+            immediate: true,
+            deep: true,
+          }
+        }
+      });
+
+      // vm.$watch('user', function (newValue, oldValue) {
+      //   this.user.fullName = newValue.firstName + ' ' + newValue.lastName
+      // }, {
+      //   immediate: true,
+      //   deep: true,
+      // })
+    </script>
+  </body>
+</html>

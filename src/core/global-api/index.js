@@ -6,7 +6,7 @@ import { initMixin } from './mixin'
 import { initExtend } from './extend'
 import { initAssetRegisters } from './assets'
 import { set, del } from '../observer/index'
-import { ASSET_TYPES } from 'shared/constants'
+import { ASSET_TYPES } from '../../shared/constants'
 import builtInComponents from '../components/index'
 import { observe } from 'core/observer/index'
 
@@ -52,6 +52,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   }
 
   Vue.options = Object.create(null)
+  // components / directives / filters
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
   })
@@ -60,6 +61,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
+  // keep-alive 组件
   extend(Vue.options.components, builtInComponents)
 
   initUse(Vue)

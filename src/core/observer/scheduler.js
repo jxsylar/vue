@@ -25,7 +25,7 @@ let index = 0
 /**
  * Reset the scheduler's state.
  */
-function resetSchedulerState () {
+function resetSchedulerState() {
   index = queue.length = activatedChildren.length = 0
   has = {}
   if (process.env.NODE_ENV !== 'production') {
@@ -127,7 +127,7 @@ function flushSchedulerQueue () {
   }
 }
 
-function callUpdatedHooks (queue) {
+function callUpdatedHooks(queue) {
   let i = queue.length
   while (i--) {
     const watcher = queue[i]
@@ -142,14 +142,14 @@ function callUpdatedHooks (queue) {
  * Queue a kept-alive component that was activated during patch.
  * The queue will be processed after the entire tree has been patched.
  */
-export function queueActivatedComponent (vm: Component) {
+export function queueActivatedComponent(vm: Component) {
   // setting _inactive to false here so that a render function can
   // rely on checking whether it's in an inactive tree (e.g. router-view)
   vm._inactive = false
   activatedChildren.push(vm)
 }
 
-function callActivatedHooks (queue) {
+function callActivatedHooks(queue) {
   for (let i = 0; i < queue.length; i++) {
     queue[i]._inactive = true
     activateChildComponent(queue[i], true /* true */)
@@ -161,7 +161,7 @@ function callActivatedHooks (queue) {
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
  */
-export function queueWatcher (watcher: Watcher) {
+export function queueWatcher(watcher: Watcher) {
   const id = watcher.id
   if (has[id] == null) {
     has[id] = true
