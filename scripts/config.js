@@ -27,6 +27,7 @@ const weexFactoryPlugin = {
 
 const aliases = require('./alias')
 const resolve = p => {
+  // 根据路径中的前半部分去 alias 中找别名
   const base = p.split('/')[0]
   if (aliases[base]) {
     return path.resolve(aliases[base], p.slice(base.length + 1))
@@ -35,6 +36,7 @@ const resolve = p => {
   }
 }
 
+// entry 字段就是入口文件
 const builds = {
   // Runtime only (CommonJS). Used by bundlers e.g. Webpack & Browserify
   'web-runtime-cjs-dev': {
@@ -263,6 +265,8 @@ function genConfig (name) {
   return config
 }
 
+// 判断环境变量是否有 TARGET
+// 如果有的话, 使用 getConfig 生成 rollup 配置文件
 if (process.env.TARGET) {
   module.exports = genConfig(process.env.TARGET)
 } else {

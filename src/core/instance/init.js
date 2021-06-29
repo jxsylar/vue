@@ -13,11 +13,15 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 let uid = 0
 
 export function initMixin (Vue: Class<Component>) {
+  // 给 Vue 实例添加 _init() 方法
+  // 合并 options, 初始化操作
+  // 该方法在 Vue 构造函数中调用, 相当于入口, 所有的事情都有此开始
   Vue.prototype._init = function (options?: Object) {
     const vm: Component = this
     // a uid
     vm._uid = uid++
 
+    // 开发环境下的性能检测
     let startTag, endTag
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
@@ -27,8 +31,10 @@ export function initMixin (Vue: Class<Component>) {
     }
 
     // a flag to avoid this being observed
+    // 如果是 Vue 实例, 则不需要 observe
     vm._isVue = true
     // merge options
+    // 合并 options
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
@@ -49,13 +55,22 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
+    // 初始化 vm 生命周期相关变量: $parent/$root/$children/$refs
     initLifecycle(vm)
+    // 初始化 vm 事件监听, 父组件绑定在当前组件上的事件
     initEvents(vm)
+    // 初始化 vm 的 render 函数: $slots/$scopedSlots/_c/$createElement/$attrs/$listeners
     initRender(vm)
+    // 调用 beforeCreate 生命钩子函数
     callHook(vm, 'beforeCreate')
+    // 把 inject 的成员注入到 vm 上
+    // initInjections 和 initProvide 是一对的, 都是实现依赖注入的
     initInjections(vm) // resolve injections before data/props
+    // 初始化 vm 的 props/metheds/data/computed/watch
     initState(vm)
+    // 初始化 provide
     initProvide(vm) // resolve provide after data/props
+    // 调用 created 生命钩子函数
     callHook(vm, 'created')
 
     /* istanbul ignore if */
@@ -65,6 +80,7 @@ export function initMixin (Vue: Class<Component>) {
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
 
+    // 调用 $mount 挂载真实 DOM
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }
