@@ -8,9 +8,13 @@
   </head>
   <body>
     <div id="app">
-      {{ reversedMessage }}
+      <div>{{ message }}</div>
+      <div>{{ user.aaa }}</div>
+      <!-- <div>{{ reversedMessage }}</div> -->
       <br>
-      {{ user.fullName }}
+      <div>{{ user.firstName }}</div>
+      <div>{{ user.lastName }}</div>
+      <div>{{ user.fullName }}</div>
     </div>
     <script src="../../dist/vue.js"></script>
     <script>
@@ -24,22 +28,27 @@
             fullName: '',
           }
         },
-        computed: {
-          reversedMessage: function() {
-            return this.message.split('').reverse().join('')
-          }
-        },
-        watch: {
-          'user': {
-            handler: function (newValue, oldValue) {
-              this.user.fullName = newValue.firstName + ' ' + newValue.lastName
-            },
-            immediate: true,
-            deep: true,
-          }
-        }
+        // computed: {
+        //   reversedMessage() {
+        //     return this.message.split('').reverse().join('')
+        //   }
+        // },
+        // 对象形式
+        // watch: {
+        //   'user': {
+        //     handler: function (newValue, oldValue) {
+        //       this.user.fullName = newValue.firstName + ' ' + newValue.lastName
+        //     },
+        //     // 是否立即执行一次
+        //     // 如果不立即执行, 首次渲染后页面上看不到数据
+        //     immediate: true,
+        //     // 深度监听, 如果是 true, 可以监听 user 对象属性的变化
+        //     deep: true,
+        //   }
+        // }
       });
 
+      // 函数形式
       // vm.$watch('user', function (newValue, oldValue) {
       //   this.user.fullName = newValue.firstName + ' ' + newValue.lastName
       // }, {
