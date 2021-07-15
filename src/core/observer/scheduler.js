@@ -88,6 +88,7 @@ function flushSchedulerQueue () {
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
     if (watcher.before) {
+      // 触发 beforeUpdate 钩子函数
       watcher.before()
     }
     id = watcher.id
@@ -163,8 +164,10 @@ function callActivatedHooks(queue) {
  */
 export function queueWatcher(watcher: Watcher) {
   const id = watcher.id
+  // 防止 watcher 重复处理
   if (has[id] == null) {
     has[id] = true
+    // flushing: 正在刷新
     if (!flushing) {
       queue.push(watcher)
     } else {

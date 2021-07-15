@@ -58,7 +58,7 @@ export function initLifecycle (vm: Component) {
 
 export function lifecycleMixin (Vue: Class<Component>) {
   // _update 方法的作用是把 VNode 渲染成真实 DOM
-  // 手粗渲染会调用, 数据更新也会调用
+  // 手动渲染会调用, 数据更新也会调用
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el

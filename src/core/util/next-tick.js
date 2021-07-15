@@ -40,6 +40,8 @@ let timerFunc
 // Promise is available, we will use it:
 /* istanbul ignore next, $flow-disable-line */
 if (typeof Promise !== 'undefined' && isNative(Promise)) {
+  // 优先以 Promise 的方式处理回调函数(微任务)
+  // 微任务: 本轮事件循环, 所有同步任务执行完后执行
   const p = Promise.resolve()
   timerFunc = () => {
     p.then(flushCallbacks)
@@ -59,6 +61,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   // Use MutationObserver where native Promise is not available,
   // e.g. PhantomJS, iOS7, Android 4.4
   // (#6466 MutationObserver is unreliable in IE11)
+  // MutationObserver 执行的任务也是微任务
   let counter = 1
   const observer = new MutationObserver(flushCallbacks)
   const textNode = document.createTextNode(String(counter))
@@ -75,6 +78,7 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
   // Technically it leverages the (macro) task queue,
   // but it is still a better choice than setTimeout.
   timerFunc = () => {
+    // 立即执行, 性能比 setTimeout 好
     setImmediate(flushCallbacks)
   }
 } else {
@@ -86,9 +90,11 @@ if (typeof Promise !== 'undefined' && isNative(Promise)) {
 
 export function nextTick (cb?: Function, ctx?: Object) {
   let _resolve
+  // 对 cb 做一层封装, 主要增加异常处理, 然后存入 callbacks 数组中
   callbacks.push(() => {
     if (cb) {
       try {
+        // 调用 cb
         cb.call(ctx)
       } catch (e) {
         handleError(e, ctx, 'nextTick')
@@ -98,11 +104,14 @@ export function nextTick (cb?: Function, ctx?: Object) {
     }
   })
   if (!pending) {
+    // 队列正在处理
     pending = true
+    // 核心: 调用回调函数
     timerFunc()
   }
   // $flow-disable-line
   if (!cb && typeof Promise !== 'undefined') {
+    // 返回 Promise 对象
     return new Promise(resolve => {
       _resolve = resolve
     })

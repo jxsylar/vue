@@ -29,7 +29,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
       )
     }
   }
-  // 初始化 Vue.config 对象
+  // 定义 Vue.config 对象
   Object.defineProperty(Vue, 'config', configDef)
 
   // exposed util methods.

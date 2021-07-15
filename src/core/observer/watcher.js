@@ -80,6 +80,8 @@ export default class Watcher {
     if (typeof expOrFn === 'function') {
       this.getter = expOrFn
     } else {
+      // expOrFn 是字符串的时候. 如: {'person.name': function ...}
+      // parsePath('person.name') 返回一个函数获取 person.name 的值
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
         this.getter = noop
@@ -91,6 +93,7 @@ export default class Watcher {
         )
       }
     }
+    // 计算属性 `computed` 的 `lazy` 为 `true`, 其他为 `false`
     this.value = this.lazy
       ? undefined
       : this.get()
@@ -169,6 +172,7 @@ export default class Watcher {
     } else if (this.sync) {
       this.run()
     } else {
+      // 渲染 watcher 会执行
       queueWatcher(this)
     }
   }
@@ -193,6 +197,7 @@ export default class Watcher {
         this.value = value
         if (this.user) {
           const info = `callback for watcher "${this.expression}"`
+          // 用户 watcher (computed 或者 watch) 的 cb
           invokeWithErrorHandling(this.cb, this.vm, [value, oldValue], this.vm, info)
         } else {
           this.cb.call(this.vm, value, oldValue)

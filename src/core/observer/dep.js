@@ -34,6 +34,7 @@ export default class Dep {
     }
   }
 
+  // 发布通知
   notify () {
     // stabilize the subscriber list first
     const subs = this.subs.slice()
@@ -43,6 +44,7 @@ export default class Dep {
       // order
       subs.sort((a, b) => a.id - b.id)
     }
+    // 调用每个订阅者的 update 方法实现更新
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
     }
@@ -52,14 +54,19 @@ export default class Dep {
 // The current target watcher being evaluated.
 // This is globally unique because only one watcher
 // can be evaluated at a time.
+// Dep.target 用来存放目前正在使用的 watcher
+// 全局唯一, 并且一次也只能有一个 watcher 被使用
 Dep.target = null
 const targetStack = []
-
+// 入栈并将当前的 watcher 赋值给 Dep.target
+// 每一个组件对应一个 watcher 对象
+// 父子组件嵌套的时候, 先把父组件对应的 watcher 入栈,
+// 再去处理子组件的 watcher, 子组件的处理完毕后, 再把父组件对应的 watcher 出栈, 继续操作
 export function pushTarget (target: ?Watcher) {
   targetStack.push(target)
   Dep.target = target
 }
-
+// 出栈操作
 export function popTarget () {
   targetStack.pop()
   Dep.target = targetStack[targetStack.length - 1]

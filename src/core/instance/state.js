@@ -110,6 +110,7 @@ function initProps (vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+// 把 `data` 中的成员注入到 vue 实例上, 并且转换成响应式对象
 function initData (vm: Component) {
   let data = vm.$options.data
   // 初始化 _data, 组件中的 data 如果是函数, 则调用函数返回结果
@@ -154,7 +155,7 @@ function initData (vm: Component) {
     }
   }
   // observe data
-  // 响应式处理
+  // 数据响应式处理
   observe(data, true /* asRootData */)
 }
 
@@ -299,6 +300,7 @@ function initMethods (vm: Component, methods: Object) {
 function initWatch (vm: Component, watch: Object) {
   for (const key in watch) {
     const handler = watch[key]
+    // handler 可以是数组形式
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
         createWatcher(vm, key, handler[i])
@@ -319,6 +321,7 @@ function createWatcher (
     options = handler
     handler = handler.handler
   }
+  // handler 如果是字符串, 则会在 vm 实例查找对应的函数
   if (typeof handler === 'string') {
     handler = vm[handler]
   }
@@ -352,8 +355,15 @@ export function stateMixin (Vue: Class<Component>) {
   Vue.prototype.$delete = del
 
   Vue.prototype.$watch = function (
+    // 要监视的 $data 中的属性, 可以是表达式或者函数
     expOrFn: string | Function,
+    // 数据变化后执行的回调函数
+    //   - 函数: 回调函数, 不能是箭头函数, 因为需要绑定组件上下文 vm
+    //   - 对象: 具有 handler 属性(字符串或者函数), 如果该属性为字符串则 method 中相应定义
     cb: any,
+    // 可选的选项
+    //  - deep: Boolean, 深度监听
+    //  - immediate: Boolean, 是否立即执行一次回调函数
     options?: Object
   ): Function {
     // 获取 vm 实例 this
@@ -363,16 +373,18 @@ export function stateMixin (Vue: Class<Component>) {
       return createWatcher(vm, expOrFn, cb, options)
     }
     options = options || {}
-    // 标记为用户 watcher
+    // 标记为用户 watcher (computed 或者 watch)
     options.user = true
     // 创建用户 watcher 对象
     const watcher = new Watcher(vm, expOrFn, cb, options)
+    // immediate 为 true 时, 会立即执行一次
     if (options.immediate) {
       const info = `callback for immediate watcher "${watcher.expression}"`
       pushTarget()
       invokeWithErrorHandling(cb, vm, [watcher.value], vm, info)
       popTarget()
     }
+    // 返回取消监听的方法
     return function unwatchFn () {
       watcher.teardown()
     }
